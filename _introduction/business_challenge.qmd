@@ -1,3 +1,25 @@
 ## The Business Challenge
 
-Explain the Business Challenge and set up in this file
+Suppose you work as an analyst at the **Australian Treasury**. 
+You have been asked to put together a dataset that describes how the Australian economy has changed over time.
+
+You are interested in three measures: life expectancy, population, and GDP per capita. 
+The World Bank collects each of these measures and makes them available through its API.
+
+For this analysis, we want observations from **1960 to 2020**, measured every **five years**. 
+We could download the data by hand, but that would mean repeatedly finding and downloading the same kinds of data for different years and indicators.
+
+Instead, we will use the World Bank API to request the data directly. 
+We will start with one indicator in one year, then build up our code until we can collect all three indicators across the full period.
+
+By the end of the tutorial, we will have created a dataset that we can use to study how Australia has changed between 1960 and 2020.
+
+### Libraries
+
+We will need the following libraries:
+
+```{r}
+library(httr2)
+library(tidyverse)
+```
+

@@ -1,8 +1,8 @@
 project:
   render:
     - tutorial.qmd
-title: 'Teaching Guide: R version'
+title: 'Teaching Guide: Collecting Data from the World Bank API'
 format:
   html:
-    output-file: "tutorial-r-teaching-guide"
+    output-file: "tutorial-api-teaching-guide"
     output-ext:  "html"

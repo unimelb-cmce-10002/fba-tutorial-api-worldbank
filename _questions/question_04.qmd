@@ -1,11 +1,65 @@
-<!-- question-type: prepare -->
-### Exercise 4: Title
+<!-- question-type: inclass -->
+### Exercise 4: Turning the request into a function
 
-This is the text for the question, with its accompanying code 
+Suppose we want to request data for multiple combinations of years and indicators.
+
+**(a)** Looking back at the request from the pre-class exercises, which parts of the request would need to change when we move from one year–indicator pair to another?
+
+Name the two pieces of information that should become arguments to our function.
+
+**(b)** Complete the function below.
+
+Call the function `get_indicator()` and give it two arguments: `year` and `indicator`.
 
 ```{r}
-# Example code for the question
-1 + 1
+#| eval: false
+YOUR_CODE {
+
+  response <-
+    request("https://api.worldbank.org") |>
+    req_url_path_append(
+      "v2",
+      "country",
+      "AUS",
+      "indicator",
+      YOUR_CODE
+    ) |>
+    req_url_query(
+      date = YOUR_CODE,
+      format = "json"
+    ) |>
+    req_perform()
+
+  data_raw <-
+    response |>
+    resp_body_json()
+
+  data <-
+    data_raw |>
+    clean_world_bank_data()
+
+  data
+}
+```
+
+**(c)** Use `get_indicator()` to request life expectancy in 2020.
+
+```{r}
+#| eval: false
+
+get_indicator(
+  year = 2020,
+  indicator = "SP.DYN.LE00.IN"
+)
+```
+
+**(d)** Now use the function to request Australia's population in 2020.
+The World Bank indicator code for population is `"SP.POP.TOTL"`.
+
+```{r}
+#| eval: false
+
+YOUR_CODE
 ```
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
@@ -19,23 +73,38 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- identify which parts of an API request need to vary across requests;
+- turn those changing parts into function arguments;
+- write a function called `get_indicator()` with the arguments `year` and `indicator`;
+- use the function to request different year–indicator combinations.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- The structure of the API request stays the same across requests.
+- The year changes inside `req_url_query()`.
+- The indicator code changes inside `req_url_path_append()`.
+- These are therefore natural choices for function arguments.
+- A function lets us reuse the same request structure while changing only the inputs we care about.
+- The function should return the cleaned data so that it can later be used inside `map()` and `map2()`.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- Which parts of the request stay fixed?
+- Which parts change when we ask for a different indicator?
+- Which parts change when we ask for a different year?
+- Why is it useful for the function to return the cleaned data rather than the raw response?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Making the country code or base URL into function arguments even though they are fixed for this analysis.
+- Leaving the indicator code hard-coded inside `req_url_path_append()`.
+- Leaving `2020` hard-coded inside `req_url_query()`.
+- Forgetting to name the function `get_indicator()`.
+- Forgetting that the final `data` line is what the function returns.
 
 :::
 
@@ -55,11 +124,65 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a)
+
+The two pieces of information that need to change are:
+
+- the **year**;
+- the **indicator code**.
+
+These should become the arguments `year` and `indicator`.
+
+(b)
 
 ```{r}
-print("Hello, world!")
+get_indicator <- function(year, indicator) {
+
+  response <-
+    request("https://api.worldbank.org") |>
+    req_url_path_append(
+      "v2",
+      "country",
+      "AUS",
+      "indicator",
+      indicator
+    ) |>
+    req_url_query(
+      date = year,
+      format = "json"
+    ) |>
+    req_perform()
+
+  data_raw <-
+    response |>
+    resp_body_json()
+
+  data <-
+    data_raw |>
+    clean_world_bank_data()
+
+  data
+}
 ```
+
+(c)
+
+```{r}
+get_indicator(
+  year = 2020,
+  indicator = "SP.DYN.LE00.IN"
+)
+```
+
+(d)
+
+```{r}
+get_indicator(
+  year = 2020,
+  indicator = "SP.POP.TOTL"
+)
+```
+
 :::
 
 :::

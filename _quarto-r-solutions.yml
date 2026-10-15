@@ -1,8 +1,8 @@
 project:
   render:
     - tutorial.qmd
-title: 'Solutions document: R version'
+title: 'Solutions document: Collecting Data from the World Bank API'
 format:
   html:
-    output-file: "tutorial-r-solutions"
+    output-file: "tutorial-api-solutions"
     output-ext:  "html"

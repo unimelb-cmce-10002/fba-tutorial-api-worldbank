@@ -1,12 +1,19 @@
 <!-- question-type: prepare -->
-### Exercise 1: Title
+### Exercise 1: Breaking down an API URL
 
-This is the text for the question, with its accompanying code 
+The World Bank API uses URLs to specify the data we want to request.
 
-```{r}
-# Example code for the question
-1 + 1
-```
+For example, the following URL requests Australia's life expectancy in 2020:
+
+`https://api.worldbank.org/v2/country/AUS/indicator/SP.DYN.LE00.IN?date=2020&format=json`
+
+Before we build this request in R, break the URL into its three main parts.
+
+**(a)** What is the **base URL**?
+
+**(b)** What is the **path**?
+
+**(c)** What are the **query parameters**?
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
 ::: {.content-visible when-profile="r-teaching-guide"}
@@ -19,23 +26,34 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- identify the base URL, path, and query parameters in an API URL;
+- understand that each part of the URL helps specify what data the API should return;
+- connect the structure of the URL to the `httr2` functions they will use next.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- The **base URL** identifies the API we are sending the request to.
+- The **path** identifies the resource we want from that API.
+- The **query parameters** provide additional instructions about the data we want returned.
+- Everything before the `?` belongs to the root URL and path.
+- Everything after the `?` contains query parameters, separated by `&`.
+- We will shortly translate these three parts into `request()`, `req_url_path_append()`, and `req_url_query()`.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- Which part of the URL would we change if we wanted a different year?
+- Which part would we change if we wanted a different indicator?
+- Which parts of the URL stay the same for this World Bank API?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Treating the full URL before the `?` as the root URL. The root URL here is only `https://api.worldbank.org`.
+- Including the `?` or `&` symbols as part of the query parameter names.
+- Treating `date=2020&format=json` as a single query parameter rather than two separate parameters.
 
 :::
 
@@ -55,14 +73,27 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+The URL can be broken into:
 
-```{r}
-print("Hello, world!")
-```
+(a) **Base URL**
+
+`https://api.worldbank.org`
+
+(b) **Path**
+
+`v2/country/AUS/indicator/SP.DYN.LE00.IN`
+
+(c) **Query parameters**
+
+- `date = 2020`
+- `format = json`
+
+The base URL tells us which API we are using. The path specifies that we want the life expectancy indicator for Australia. The query parameters tell the API that we want the 2020 observation returned as JSON.
+
 :::
 
 :::
 
 :::
 <!-- END PROFILE:r-solutions -->
+

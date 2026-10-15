@@ -1,12 +1,36 @@
 <!-- question-type: inclass -->
-### Exercise 1: Title
+### Exercise 6: Understanding `map()`
 
-This is the text for the question, with its accompanying code 
+Consider the code we used to request life expectancy for each year:
 
 ```{r}
-# Example code for the question
-1 + 1
+#| eval: false
+
+life_expectancy <-
+  map(
+    years,
+    get_indicator,
+    indicator = "SP.DYN.LE00.IN"
+  )
 ```
+
+**(a)** What is the first argument, `years`, telling `map()`?
+
+**(b)** What is the second argument, `get_indicator`, telling `map()`?
+
+**(c)** Why do we pass `indicator = "SP.DYN.LE00.IN"` separately?
+
+**(d)** Recall that we defined our function as:
+
+```{r}
+#| eval: false
+
+get_indicator <- function(year, indicator) {
+  # ...
+}
+```
+
+Why does it matter that `year` is the first argument of `get_indicator()` in the `map()` call above?
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
 ::: {.content-visible when-profile="r-teaching-guide"}
@@ -19,23 +43,38 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- explain what the first two arguments of `map()` do;
+- distinguish between the input that changes across calls and arguments that stay fixed;
+- understand how `map()` passes values from its first argument into the function;
+- connect the order of function arguments to how the `map()` call works.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- The first argument to `map()` is the vector of values we want to work through.
+- The second argument tells `map()` which function to apply.
+- `map()` takes one value from `years` at a time and passes it to `get_indicator()`.
+- The named argument `indicator = "SP.DYN.LE00.IN"` stays fixed across every call.
+- Because `year` is the first argument of `get_indicator()`, each value from `years` is passed to `year`.
+- The call is therefore equivalent to repeatedly running `get_indicator()` with a different year and the same indicator.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- What would the first call made by `map()` look like?
+- What would the second call look like?
+- Which value changes from one call to the next?
+- Which value stays fixed?
+- If `indicator` were the first argument of `get_indicator()`, would this `map()` call still do what we want?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Thinking that `map()` passes the full `years` vector to `get_indicator()` in one call.
+- Thinking that `indicator` is being mapped over as well.
+- Thinking that the second argument to `map()` is another value rather than the function to apply.
+- Missing that the values in `years` are passed to the first argument of `get_indicator()`.
 
 :::
 
@@ -55,11 +94,36 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a)
+
+`years` tells `map()` which values to work through. `map()` takes one year at a time from this vector.
+
+(b)
+
+`get_indicator` tells `map()` which function to apply to each value in `years`.
+
+(c)
+
+`indicator = "SP.DYN.LE00.IN"` is passed separately because it stays the same across every call. We want to change the year while continuing to request the same indicator.
+
+(d)
+
+`map()` passes each value from `years` to the first argument of `get_indicator()`. Because `year` is the first argument, each value is used as the year in the API request.
+
+For example, the first two calls made by `map()` are equivalent to:
 
 ```{r}
-print("Hello, world!")
+get_indicator(
+  year = 1960,
+  indicator = "SP.DYN.LE00.IN"
+)
+
+get_indicator(
+  year = 1965,
+  indicator = "SP.DYN.LE00.IN"
+)
 ```
+
 :::
 
 :::

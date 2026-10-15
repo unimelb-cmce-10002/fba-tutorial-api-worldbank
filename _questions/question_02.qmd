@@ -1,12 +1,52 @@
 <!-- question-type: prepare -->
-### Exercise 2: Title
+### Exercise 2: Building the request in R
 
-This is the text for the question, with its accompanying code 
+We will now build the request in R using `httr2`.
+
+Start with the base URL:
 
 ```{r}
-# Example code for the question
-1 + 1
+#| eval: false
+
+request("https://api.worldbank.org")
 ```
+
+**(a)** Add the path to the request.
+
+```{r}
+#| eval: false
+
+request("https://api.worldbank.org") |>
+  YOUR_CODE
+```
+
+**(b)** Add the query parameters so that we request the 2020 observation in JSON format.
+
+```{r}
+#| eval: false
+
+request("https://api.worldbank.org") |>
+  YOUR_CODE |>
+  YOUR_CODE
+```
+
+**(c)** Send the request to the World Bank API and save the response as `response`.
+
+```{r}
+#| eval: false
+response <-
+  request("https://api.worldbank.org") |>
+  YOUR_CODE |>
+  YOUR_CODE |>
+  YOUR_CODE
+```
+
+**(d)** In your own words, explain what each of the following functions does in the request:
+
+- `request()`
+- `req_url_path_append()`
+- `req_url_query()`
+- `req_perform()`
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
 ::: {.content-visible when-profile="r-teaching-guide"}
@@ -19,23 +59,34 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- translate the parts of an API URL into an `httr2` request;
+- use `request()`, `req_url_path_append()`, `req_url_query()`, and `req_perform()` to build and send an API request;
+- explain the role of each function in the request.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- `request()` starts the request with the API's base URL.
+- `req_url_path_append()` adds the path that identifies the resource we want.
+- `req_url_query()` adds query parameters that further specify the request.
+- `req_perform()` sends the request to the API.
+- The code mirrors the URL structure from Exercise 1: base URL, path, then query parameters.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- Which part of the code would we change if we wanted a different year?
+- Which part would we change if we wanted a different indicator?
+- What would happen if we built the request but did not call `req_perform()`?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Putting the full path inside a single character string rather than passing the path components to `req_url_path_append()`.
+- Including `?` or `&` inside `req_url_query()`.
+- Forgetting that `req_perform()` is the step that actually sends the request.
+- Treating `request()` as if it downloads the data immediately.
 
 :::
 
@@ -55,11 +106,62 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a) Add the path using `req_url_path_append()`.
 
 ```{r}
-print("Hello, world!")
+request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2",
+    "country",
+    "AUS",
+    "indicator",
+    "SP.DYN.LE00.IN"
+  )
 ```
+
+(b) Add the query parameters using `req_url_query()`.
+
+```{r}
+request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2",
+    "country",
+    "AUS",
+    "indicator",
+    "SP.DYN.LE00.IN"
+  ) |>
+  req_url_query(
+    date = 2020,
+    format = "json"
+  )
+```
+
+(c) Send the request using `req_perform()` and save the response.
+
+```{r}
+response <-
+  request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2",
+    "country",
+    "AUS",
+    "indicator",
+    "SP.DYN.LE00.IN"
+  ) |>
+  req_url_query(
+    date = 2020,
+    format = "json"
+  ) |>
+  req_perform()
+```
+
+(d)
+
+- `request()` starts a new request using the World Bank API's base URL.
+- `req_url_path_append()` adds the path that identifies the country and indicator we want.
+- `req_url_query()` adds the year and asks the API to return the response in JSON format.
+- `req_perform()` sends the request to the API and returns the response.
+
 :::
 
 :::

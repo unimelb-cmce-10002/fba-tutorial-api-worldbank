@@ -1,11 +1,56 @@
-<!-- question-type: prepare -->
-### Exercise 5: Title
+<!-- question-type: inclass -->
+### Exercise 5: Requesting data for many years
 
-This is the text for the question, with its accompanying code 
+We now have a function that can request one indicator for one year. Suppose we want life expectancy for Australia every five years from 1960 to 2020.
+
+**(a)** Create a vector called `years` containing the years from 1960 to 2020 in steps of five.
 
 ```{r}
-# Example code for the question
-1 + 1
+#| eval: false
+
+years <-
+  seq(
+    from = YOUR_CODE,
+    to = YOUR_CODE,
+    by = 5
+  )
+```
+
+**(b)** Without using `map()`, use `get_indicator()` to request life expectancy for the first three years in `years`. What is changing across these three calls of the function? What is staying the same?
+
+
+```{r}
+#| eval: false
+
+YOUR_CODE_HERE
+```
+
+
+**(c)** Use `map()` to repeat the request for every value in `years`.
+
+```{r}
+#| eval: false
+
+life_expectancy <-
+  map(
+    YOUR_CODE,
+    YOUR_CODE,
+    indicator = "SP.DYN.LE00.IN"
+  )
+```
+
+**(d)** Inspect `life_expectancy`.
+
+What type of object has `map()` returned?
+
+**(e)** Use `list_rbind()` to combine the results into one dataset.
+
+```{r}
+#| eval: false
+
+life_expectancy <-
+  life_expectancy |>
+  YOUR_CODE
 ```
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
@@ -19,23 +64,40 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- create a sequence of years using `seq()`;
+- use `map()` to repeat the same function over multiple years;
+- recognise which part of the function call changes across iterations and which part stays fixed;
+- recognise that `map()` returns a list;
+- combine the returned datasets using `list_rbind()`.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- The three manual calls in part (b) all use the same function and indicator.
+- Only the value of `year` changes across those calls.
+- `map()` automates this repeated pattern.
+- Here, `map()` works through each value in `years` and calls `get_indicator()` once for each value.
+- The indicator stays fixed at `"SP.DYN.LE00.IN"` across all calls.
+- `map()` returns one result for each year, stored in a list.
+- `list_rbind()` combines those results into one dataset.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- How many times will `get_indicator()` be called?
+- What will the first call made by `map()` look like?
+- What will the second call look like?
+- Which part of the function call changes from one request to the next?
+- Why does `map()` return more than one object?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Thinking that the full `years` vector is passed to `get_indicator()` in a single call.
+- Thinking that the indicator changes across calls.
+- Expecting `map()` to return one data frame directly.
+- Forgetting that each call to `get_indicator()` returns its own dataset.
 
 :::
 
@@ -55,11 +117,61 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a)
 
 ```{r}
-print("Hello, world!")
+years <-
+  seq(
+    from = 1960,
+    to = 2020,
+    by = 5
+  )
 ```
+
+(b)
+
+```{r}
+get_indicator(
+  year = 1960,
+  indicator = "SP.DYN.LE00.IN"
+)
+
+get_indicator(
+  year = 1965,
+  indicator = "SP.DYN.LE00.IN"
+)
+
+get_indicator(
+  year = 1970,
+  indicator = "SP.DYN.LE00.IN"
+)
+```
+
+The year changes across the three calls. The indicator stays the same.
+
+(c)
+
+```{r}
+life_expectancy <-
+  map(
+    years,
+    get_indicator,
+    indicator = "SP.DYN.LE00.IN"
+  )
+```
+
+(d)
+
+`map()` returns a list. Each element contains the result of one call to `get_indicator()`.
+
+(e)
+
+```{r}
+life_expectancy <-
+  life_expectancy |>
+  list_rbind()
+```
+
 :::
 
 :::

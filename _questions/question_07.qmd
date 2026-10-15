@@ -1,12 +1,62 @@
 <!-- question-type: inclass -->
-### Exercise 7: Title
+### Exercise 7: Requesting multiple years and indicators
 
-This is the text for the question, with its accompanying code 
+So far, we have used `map()` when one input changes and the other stays fixed.
+
+For our final dataset, we want three indicators:
+
+- life expectancy: `"SP.DYN.LE00.IN"`
+- population: `"SP.POP.TOTL"`
+- GDP per capita: `"NY.GDP.PCAP.CD"`
+
+across every five years from 1960 to 2020.
+
+**(a)** Create a vector called `indicators` containing the three World Bank indicator codes.
 
 ```{r}
-# Example code for the question
-1 + 1
+#| eval: false
+
+indicators <-
+  c(
+    YOUR_CODE
+  )
 ```
+
+**(b)** Use `expand_grid()` to create every combination of `year` and `indicator`.
+
+```{r}
+#| eval: false
+
+requests <-
+  expand_grid(
+    year = YOUR_CODE,
+    indicator = YOUR_CODE
+  )
+```
+
+Inspect `requests`.
+
+How many rows does it have? What does each row represent?
+
+**(c)** We now want to call `get_indicator()` once for each row of `requests`.
+Complete the code below using `map2()`.
+
+```{r}
+#| eval: false
+
+indicator_data <-
+  map2(
+    YOUR_CODE,
+    YOUR_CODE,
+    YOUR_CODE
+  ) |>
+  list_rbind()
+```
+
+**(d)** Why do we use `map2()` here rather than `map()`?
+
+**(e)** Inspect `indicator_data`.
+How does this dataset differ from the `life_expectancy` dataset we created earlier?
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
 ::: {.content-visible when-profile="r-teaching-guide"}
@@ -19,23 +69,42 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- create a vector of indicator codes;
+- use `expand_grid()` to create all combinations of years and indicators;
+- use `map2()` when two inputs vary together;
+- understand how the rows of `requests` correspond to repeated API calls;
+- combine the returned datasets using `list_rbind()`.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- `expand_grid()` creates every combination of the values supplied to it.
+- Each row of `requests` represents one year–indicator pair.
+- `map2()` works through two vectors together.
+- Here, the first vector supplies the year and the second supplies the indicator.
+- `get_indicator()` is called once for each pair of values.
+- We use `map2()` because both inputs vary from one request to the next.
+- `list_rbind()` combines the returned datasets into one dataset.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- How many years are in `years`?
+- How many indicators are in `indicators`?
+- How many rows should `requests` have before we run the code?
+- What does the first row of `requests` represent?
+- What arguments are passed to `get_indicator()` for that row?
+- Why would the `map()` approach from Exercise 5 no longer be enough here?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Thinking that `expand_grid()` matches values row by row rather than creating all combinations.
+- Forgetting that each row of `requests` represents one API request.
+- Passing the full `requests` object into `map2()` rather than its two columns.
+- Using `map()` even though both year and indicator change across requests.
+- Forgetting that the order of the inputs to `map2()` should match the order of the arguments in `get_indicator()`.
 
 :::
 
@@ -55,11 +124,51 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a)
 
 ```{r}
-print("Hello, world!")
+indicators <-
+  c(
+    "SP.DYN.LE00.IN",
+    "SP.POP.TOTL",
+    "NY.GDP.PCAP.CD"
+  )
 ```
+
+(b)
+
+```{r}
+requests <-
+  expand_grid(
+    year = years,
+    indicator = indicators
+  )
+```
+
+There are 13 years from 1960 to 2020 in steps of five and three indicators, so `requests` has 39 rows.
+
+Each row represents one year–indicator pair that we want to request from the World Bank API.
+
+(c)
+
+```{r}
+indicator_data <-
+  map2(
+    requests$year,
+    requests$indicator,
+    get_indicator
+  ) |>
+  list_rbind()
+```
+
+(d)
+
+We use `map2()` because two inputs change across requests: the year and the indicator. `map2()` works through these two vectors together and passes each pair of values to `get_indicator()`.
+
+(e)
+
+`life_expectancy` contains one indicator across many years. `indicator_data` contains all three indicators across the same set of years.
+
 :::
 
 :::

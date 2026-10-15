@@ -1,10 +1,10 @@
 project:
   render:
     - tutorial.qmd
-title: 'Questions document: R version'
+title: 'Questions document: Collecting Data from the World Bank API'
 execute:
   eval: false
 format:
   html:
-    output-file: "tutorial-r-questions"
+    output-file: "tutorial-api-questions"
     output-ext:  "html"

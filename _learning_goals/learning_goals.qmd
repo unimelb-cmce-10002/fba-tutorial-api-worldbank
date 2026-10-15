@@ -3,6 +3,8 @@
 
 By the end of this tutorial, you should be able to:
 
-- COMPLETE THIS
-- WITH MULTIPLE BULLETS
+- Identify the base URL, path, and query parameters in an API request.
+- Construct and send an API request in R using `httr2`.
+- Write a function that changes selected parts of an API request.
+- Use `map()` and `map2()` to repeat API requests across multiple inputs.
 :::

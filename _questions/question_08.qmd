@@ -1,12 +1,11 @@
 <!-- question-type: inclass -->
-### Exercise 8: Title
+### Exercise 8: Extending the request
 
-This is the text for the question, with its accompanying code 
+So far, our function assumes that every request is for Australia.
 
-```{r}
-# Example code for the question
-1 + 1
-```
+**(a)** Suppose we also wanted the country to vary across requests. What would need to change in `get_indicator()`?
+
+**(b)** We used `map()` when one input varied and `map2()` when two inputs varied. If year, indicator, and country all varied, what kind of change would we need to make to our mapping approach?
 
 <!-- BEGIN PROFILE:r-teaching-guide -->
 ::: {.content-visible when-profile="r-teaching-guide"}
@@ -19,23 +18,31 @@ Teaching Note
 
 ::: {.teaching-block-body}
 
-🎯 **Learning Objective** 
+🎯 **Learning Objective**
+
 Students should:
 
-- XXXXX
+- recognise when another fixed part of an API request should become a function argument;
+- generalise the progression from `map()` to `map2()` to cases where more than two inputs vary.
 
-✅   **Core Concepts to Highlight**
+✅ **Core Concepts to Highlight**
 
-List them here
+- The country code is currently hard-coded as `"AUS"` inside `req_url_path_append()`.
+- If country varies, it should become another argument of `get_indicator()`.
+- `map()` is useful when one input varies.
+- `map2()` is useful when two inputs vary together.
+- When more than two inputs vary, `pmap()` provides the more general approach.
 
+💬 **Suggested In-Class Prompts**
 
-💬 **Suggested In-Class Prompts** (if needed)
-
-List as needed
+- Which line of `get_indicator()` currently fixes the country as Australia?
+- What new argument would you add to the function?
+- Why would `map2()` no longer be enough if three inputs changed across requests?
 
 📌 **Common Misunderstandings**
 
-List as needed
+- Thinking that only query parameters can become function arguments. Values in the URL path can vary as well.
+- Looking for a `map3()` function rather than recognising `pmap()` as the generalisation.
 
 :::
 
@@ -55,11 +62,18 @@ Solution
 
 ::: {.solution-block-body}
 
-Here’s the explanation and code:
+(a)
 
-```{r}
-print("Hello, world!")
-```
+The country code is currently fixed as `"AUS"` inside `req_url_path_append()`.
+
+To allow the country to vary, we would add a `country` argument to `get_indicator()` and replace `"AUS"` with `country` inside the path.
+
+(b)
+
+We would need a mapping approach that can work across more than two changing inputs.
+
+In `purrr`, we can use `pmap()` when we want to pass several inputs to the same function.
+
 :::
 
 :::

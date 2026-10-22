@@ -1,0 +1,308 @@
+## Key R functions used in this notebook
+
+This page collects every new R function you used in this tutorial, in one place, as a quick-reference glossary. Each function below follows the same format:
+
+- **Package:** where the function comes from. Most functions you'll meet early on are **Base R** (built into R, no setup needed). Others live in packages that must be loaded first with `library()`.
+- **What it does:** a plain-English explanation, no jargon.
+- **Why you'd use it:** the everyday analyst reason you'd reach for it.
+- **Arguments:** the inputs you put inside the parentheses `()` to tell the function exactly what to work on. Some are required, some are optional. Arguments listed here are not necessarily exhaustive.
+- **Example:** the function used on this tutorial's own objects, such as `response`, `years`, and `requests`.
+
+For more information on any function, use ?`function_name` in the R console (e.g. `?request`) to see the official documentation, which includes a full list of arguments, descriptions, and often many examples.
+
+### `request()`
+
+**Package:** httr2
+
+**What it does:** Starts a new API request from a base URL. Nothing is sent yet; it only creates the request object that you then add to.
+
+**Why you'd use it:** It is the first step in building any API request in R, and it sets which API you are talking to.
+
+**Arguments:**
+
+- `base_url` — the web address of the API, in quotation marks (here, `"https://api.worldbank.org"`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Start a request to the World Bank API
+request("https://api.worldbank.org")
+```
+
+### `req_url_path_append()`
+
+**Package:** httr2
+
+**What it does:** Adds one or more pieces to the path of a request's URL, which identifies the specific data you want from the API.
+
+**Why you'd use it:** To say which country and indicator you are asking for, without writing out the whole URL by hand.
+
+**Arguments:**
+
+- `req` — the request to add to (supplied through the pipe).
+- `...` — the path pieces to add, in order, each in quotation marks or as an object (here, `"v2"`, `"country"`, `"AUS"`, `"indicator"`, `"SP.DYN.LE00.IN"`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Add the path for Australia's life expectancy indicator
+request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2",
+    "country",
+    "AUS",
+    "indicator",
+    "SP.DYN.LE00.IN"
+  )
+```
+
+### `req_url_query()`
+
+**Package:** httr2
+
+**What it does:** Adds query parameters to a request: the extra `name = value` settings that go after the `?` in a URL.
+
+**Why you'd use it:** To refine what the API returns, such as which year you want and what format the data should come back in.
+
+**Arguments:**
+
+- `.req` — the request to add to (supplied through the pipe).
+- `...` — the query parameters, written as `name = value` pairs (here, `date = 2020` and `format = "json"`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Ask for the 2020 observation, returned as JSON
+request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2", "country", "AUS", "indicator", "SP.DYN.LE00.IN"
+  ) |>
+  req_url_query(
+    date = 2020,
+    format = "json"
+  )
+```
+
+### `req_perform()`
+
+**Package:** httr2
+
+**What it does:** Sends the request to the API and returns the API's response.
+
+**Why you'd use it:** It is the step that actually contacts the API. Everything before it only builds the request.
+
+**Arguments:**
+
+- `req` — the request to send (supplied through the pipe).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Build the request, then send it and save the response
+response <-
+  request("https://api.worldbank.org") |>
+  req_url_path_append(
+    "v2", "country", "AUS", "indicator", "SP.DYN.LE00.IN"
+  ) |>
+  req_url_query(
+    date = 2020,
+    format = "json"
+  ) |>
+  req_perform()
+```
+
+### `resp_body_json()`
+
+**Package:** httr2
+
+**What it does:** Extracts the body of an API response (the data itself) and converts it from JSON into an R list.
+
+**Why you'd use it:** The response object also contains information such as the status of the request. This function pulls out just the data you asked for so you can start working with it.
+
+**Arguments:**
+
+- `resp` — the response to extract the body from (supplied through the pipe).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Extract the data from the response
+data_raw <-
+  response |>
+  resp_body_json()
+```
+
+### `function()`
+
+**Package:** Base R
+
+**What it does:** Creates your own function: a named, reusable set of steps that runs on whatever inputs you give it.
+
+**Why you'd use it:** When you would otherwise copy and paste the same code and change only a few values, such as the year and indicator in an API request. Writing it once as a function means you can reuse it as many times as you need.
+
+**Arguments:**
+
+- the names of the inputs your function takes, separated by commas (here, `year` and `indicator`). The code inside the curly braces `{}` is what runs each time the function is called, and the last value it produces is what the function returns.
+
+**Example:**
+
+```{r}
+#| eval: false
+# A function that requests one indicator for one year
+get_indicator <- function(year, indicator) {
+
+  response <-
+    request("https://api.worldbank.org") |>
+    req_url_path_append(
+      "v2", "country", "AUS", "indicator", indicator
+    ) |>
+    req_url_query(
+      date = year,
+      format = "json"
+    ) |>
+    req_perform()
+
+  data_raw <-
+    response |>
+    resp_body_json()
+
+  data <-
+    data_raw |>
+    clean_world_bank_data()
+
+  data
+}
+```
+
+### `seq()`
+
+**Package:** Base R
+
+**What it does:** Creates a sequence of numbers between a starting and an ending value, in steps of a size you choose.
+
+**Why you'd use it:** To quickly create a list of evenly spaced values, such as every fifth year, without typing each one out.
+
+**Arguments:**
+
+- `from` — the first value in the sequence (here, `1960`).
+- `to` — the last value in the sequence (here, `2020`).
+- `by` — the size of each step (here, `5`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Every fifth year from 1960 to 2020
+years <-
+  seq(
+    from = 1960,
+    to = 2020,
+    by = 5
+  )
+```
+
+### `map()`
+
+**Package:** purrr
+
+**What it does:** Applies the same function to every element of a vector or list, and returns the results as a list with one element per input.
+
+**Why you'd use it:** To repeat a task, such as an API request, across many values without copying the code for each one.
+
+**Arguments:**
+
+- `.x` — the vector or list to work through, one element at a time (here, `years`).
+- `.f` — the function to apply to each element (here, `get_indicator`). Each element of `.x` is passed to the function's first argument.
+- `...` — *(optional)* any further arguments to pass to the function, held the same for every call (here, `indicator = "SP.DYN.LE00.IN"`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Request life expectancy for every year in `years`
+life_expectancy <-
+  map(
+    years,
+    get_indicator,
+    indicator = "SP.DYN.LE00.IN"
+  )
+```
+
+### `list_rbind()`
+
+**Package:** purrr
+
+**What it does:** Takes a list of data frames and stacks them on top of each other into one data frame.
+
+**Why you'd use it:** `map()` returns a list with one data frame per request. `list_rbind()` combines them into a single dataset you can analyse.
+
+**Arguments:**
+
+- `x` — the list of data frames to combine (supplied through the pipe).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Combine the list of results into one dataset
+life_expectancy <-
+  life_expectancy |>
+  list_rbind()
+```
+
+### `expand_grid()`
+
+**Package:** tidyr
+
+**What it does:** Creates a data frame containing every possible combination of the values you give it.
+
+**Why you'd use it:** To set up a complete list of requests, such as every pairing of year and indicator, so you can work through them all.
+
+**Arguments:**
+
+- `...` — the named vectors to combine (here, `year = years` and `indicator = indicators`). With 13 years and 3 indicators, the result has 39 rows.
+
+**Example:**
+
+```{r}
+#| eval: false
+# Every combination of year and indicator
+requests <-
+  expand_grid(
+    year = years,
+    indicator = indicators
+  )
+```
+
+### `map2()`
+
+**Package:** purrr
+
+**What it does:** Applies a function to two vectors at the same time, passing one element from each into the function on every call.
+
+**Why you'd use it:** When two inputs change together across requests, such as the year and the indicator in each row of `requests`. Use `map()` when only one input changes.
+
+**Arguments:**
+
+- `.x` — the first vector, passed to the function's first argument (here, `requests$year`).
+- `.y` — the second vector, passed to the function's second argument (here, `requests$indicator`).
+- `.f` — the function to apply (here, `get_indicator`).
+
+**Example:**
+
+```{r}
+#| eval: false
+# Request every year-indicator pair and combine the results
+indicator_data <-
+  map2(
+    requests$year,
+    requests$indicator,
+    get_indicator
+  ) |>
+  list_rbind()
+```
